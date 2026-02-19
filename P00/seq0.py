@@ -37,6 +37,39 @@ def seq_count(seq, bases):
             basis[base] = genes.count(base)
         print(basis)
 
+def  seq_reverse(seq, n):
+    gene = seq_read_fasta(seq)
+    fragment = gene[: n]
+    return fragment[::-1]
+
+def seq_complement(seq):
+    gene = seq_read_fasta(seq)[ : 20]
+    gene = gene.replace("A", "X")
+    gene = gene.replace("T", "A")
+    gene = gene.replace("X", "T")
+
+    gene = gene.replace("C", "Y")
+    gene = gene.replace("G", "C")
+    gene = gene.replace("Y", "G")
+    return gene
+
+def most_frequent_base(seq):
+    gene = seq_read_fasta(seq)
+
+    bases = {"A": 0, "C": 0, "G": 0, "T": 0}
+
+    for b in gene:
+        if b in bases:
+            bases[b] += 1
+
+    # Encontrar la base con mayor frecuencia
+    most_base = max(bases, key=bases.get)
+    return most_base
+
+
+
+
+
 
 
 
