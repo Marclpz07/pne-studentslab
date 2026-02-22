@@ -1,4 +1,8 @@
-filename = "sequences/U5.txt"
-seq = ["sequences/U5.txt", "sequences/FRAT.txt", "sequences/ADA.txt", "sequences/FXN.txt"]
 from seq0 import seq_len
-seq_len(seq)
+
+genes = ["U5", "ADA", "FRAT1", "FXN"]
+
+for g in genes:
+    filename = "sequences/" + g + ".txt"
+    length = seq_len(filename)
+    print(f"Gene {g} -> Length: {length}")

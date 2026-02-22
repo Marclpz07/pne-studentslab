@@ -14,28 +14,29 @@ def seq_read_fasta(filename):
 
 def seq_len(seq):
     from pathlib import Path
-    bases = []
-    for x in seq:
-        genes = seq_read_fasta(x)
-        a = len(genes)
-        print("Genes", x, "--> Length:", len(genes))
+    gene = seq_read_fasta(seq)
+    return len(gene)
 
+def seq_count_base(seq, base):
+    gene = seq_read_fasta(seq)
+    count = 0
 
-def seq_count_base(seq, bases):
-    for x in seq:
-        genes = seq_read_fasta(x)
-        print(x)
-        for base in bases:
-            print("Base:", base,"->" ,genes.count(base), "times")
+    for b in gene:
+        if b == base:
+            count += 1
 
-def seq_count(seq, bases):
-    basis = {}
-    for x in seq:
-        genes = seq_read_fasta(x)
-        print(x)
-        for base in bases:
-            basis[base] = genes.count(base)
-        print(basis)
+    return count
+
+def seq_count(seq):
+    gene = seq_read_fasta(seq)
+
+    counts = {'A': 0, 'T': 0, 'C': 0, 'G': 0}
+
+    for b in gene:
+        if b in counts:
+            counts[b] += 1
+
+    return counts
 
 def  seq_reverse(seq, n):
     gene = seq_read_fasta(seq)

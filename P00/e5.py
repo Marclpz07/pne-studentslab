@@ -1,4 +1,10 @@
 from seq0 import seq_count
-seq = ["sequences/U5.txt", "sequences/FRAT.txt", "sequences/ADA.txt", "sequences/FXN.txt", "sequences/RNU6_269P.txt"]
-bases = ["A", "C", "G", "T"]
-seq_count(seq, bases)
+
+
+
+genes = ["U5", "ADA", "FRAT1", "FXN"]
+
+for g in genes:
+    filename = "sequences/" + g + ".txt"
+    counts = seq_count(filename)
+    print(f"Gene {g}: {counts}")

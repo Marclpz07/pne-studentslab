@@ -1,11 +1,9 @@
 from seq0 import most_frequent_base
 
-print("------| Exercise 8 |------")
-
 genes = [
     ("U5", "sequences/U5.txt"),
     ("ADA", "sequences/ADA.txt"),
-    ("FRAT1", "sequences/FRAT.txt"),
+    ("FRAT1", "sequences/FRAT1.txt"),
     ("FXN", "sequences/FXN.txt")
 ]
 
