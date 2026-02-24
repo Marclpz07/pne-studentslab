@@ -31,7 +31,7 @@ class Seq:
         return len(self.strbases)
 
 def print_seqs():
-    for i in range()
+    for i in range
 
 
 seq_list = [Seq("ACT"), Seq("GATA"), Seq("CAGATA")]
