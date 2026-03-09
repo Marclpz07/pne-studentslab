@@ -27,7 +27,7 @@ print("Gene FRAT1:", sequence)
 # Obtener 10 fragmentos de 10 bases
 fragments = [sequence[i:i+10] for i in range(0, 100, 10)]
 
-# Enviar fragmentos alternos
+# Enviar fragmentos alternos.
 for i, frag in enumerate(fragments, start=1):
     print(f"Fragment {i}: {frag}")
     if i % 2 == 1:
