@@ -79,7 +79,19 @@ class Seq:
         file_contents = file_contents.split("\n")
         body = "".join(file_contents[1:])
         self.sequence = body
-        return self.sequence
+        return self
+
+    def most_frequent_base(self):
+        if self.sequence in ["NULL", "ERROR"]:
+            return None
+
+        bases = {"A": 0, "C": 0, "G": 0, "T": 0}
+
+        for b in self.sequence:
+            if b in bases:
+                bases[b] += 1
+
+        return max(bases, key=bases.get)
 
 
 

@@ -1,0 +1,9 @@
+#Destination IP, Name (if known), Times
+#192.168.124.94, Self, time=0.084 ms,time=0.054 ms
+#212.128.255.129, f-l3208-pc01, time=0.505 ms, time=0.334 ms
+#8.8.8.8, Google, time=2.54 ms, time=2.24 ms
+#10.1.128.39, Mobile, time=152 ms, time=157 ms
+#10.8.52.34,www.urjc.es, time=1.74 ms, time=1.65 ms
+#140.82.121.4,github.com,time=35.1 ms, time=35.3 ms
+#185.15.58.224, wikipedia.org, time=16.5 ms, time=16.5 ms
+#newdomain.com.au,104.21.74.180, time=3.17 ms, time=2.94 ms
