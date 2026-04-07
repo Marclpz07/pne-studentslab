@@ -17,18 +17,23 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
         """This method is called whenever the client invokes the GET method
         in the HTTP protocol request"""
 
+        # We just print a message
+        print("GET received! Request line:")
+
         # Print the request line
-        termcolor.cprint(self.requestline, 'green')
+        termcolor.cprint("  " + self.requestline, 'green')
 
-        # IN this simple server version:
-        # We are NOT processing the client's request
-        # It is a happy server: It always returns a message saying
-        # that everything is ok
+        # Print the command received (should be GET)
+        print("  Command: " + self.command)
 
-        # Message to send back to the client
-        contents = "I am the happy server! :-)"
+        # Print the resource requested (the path)
+        print("  Path: " + self.path)
 
-        # Generating the response message
+        if self.path == "/":
+            contents = "Welcome to my server"
+        else:
+            contents = "Resource not available"
+
         self.send_response(200)  # -- Status line: OK!
 
         # Define the content-type header:
@@ -41,6 +46,10 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
         # Send the response message
         self.wfile.write(contents.encode())
 
+
+        # IN this simple server version:
+        # We are NOT processing the client's request
+        # We are NOT generating any response message
         return
 
 
