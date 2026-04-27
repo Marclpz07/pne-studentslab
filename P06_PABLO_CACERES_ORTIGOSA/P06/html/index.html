@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SEQ2 server</title>
+</head>
+
+<body>
+
+<h1>SEQ2 server</h1>
+
+<h2>Access to the Server</h2>
+
+<hr>
+
+<!-- ================= PING ================= -->
+<p>
+    Is the server alive?
+    <a href="/ping">
+        <button>PING</button>
+    </a>
+</p>
+
+<hr>
+
+<!-- ================= GET ================= -->
+<p>
+    Get a Sequence. Select sequence number
+    <select id="seq">
+        <option value="0">0</option>
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+    </select>
+
+    <button onclick="goGet()">GET</button>
+</p>
+
+<script>
+function goGet() {
+    let n = document.getElementById("seq").value;
+    window.location.href = "/get?n=" + n;
+}
+</script>
+
+<hr>
+
+<!-- ================= GENE ================= -->
+<p>
+    Get a Gene. Select the name
+
+    <select id="gene">
+        <option value="U5">U5</option>
+        <option value="ADA">ADA</option>
+        <option value="FRAT1">FRAT1</option>
+        <option value="FXN">FXN</option>
+        <option value="RNU6_269P">RNU6_269P</option>
+    </select>
+
+    <button onclick="goGene()">GENE</button>
+</p>
+
+<script>
+function goGene() {
+    let g = document.getElementById("gene").value;
+    window.location.href = "/gene?name=" + g;
+}
+</script>
+
+<hr>
+
+<!-- ================= OPERATION ================= -->
+<p>
+    Write a sequence:
+    <input type="text" id="sequence">
+</p>
+
+<p>
+    Select operation:
+    <input type="radio" name="op" value="info" checked> Info
+    <input type="radio" name="op" value="comp"> Comp
+    <input type="radio" name="op" value="rev"> Rev
+</p>
+
+<p>
+    Perform operation:
+    <button onclick="goOperation()">OPERATE!</button>
+</p>
+
+<script>
+function goOperation() {
+    let seq = document.getElementById("sequence").value;
+
+    let ops = document.getElementsByName("op");
+    let op;
+    for (let i = 0; i < ops.length; i++) {
+        if (ops[i].checked) {
+            op = ops[i].value;
+        }
+    }
+
+    window.location.href = "/operation?seq=" + seq + "&op=" + op;
+}
+</script>
+
+<hr>
+
+</body>
+</html>
+
