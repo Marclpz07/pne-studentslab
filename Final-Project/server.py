@@ -25,6 +25,10 @@ class GenomeRequestHandler(http.server.BaseHTTPRequestHandler):
             self.show_chromosome_length(params)
         elif path == "/geneLookup":
             self.show_identifier(params)
+        elif path == "/geneSeq":
+            self.show_sequence(params)
+        elif path == "/geneInfo":
+            self.show_info(params)
         else:
             self.error()
 
@@ -226,6 +230,7 @@ class GenomeRequestHandler(http.server.BaseHTTPRequestHandler):
             # Si el cromosoma no existe en la base de datos, salta la pantalla roja limpia
             self.error()
 
+
     def show_identifier(self, params):
 
         gene_list = params.get("gene", [None])
@@ -259,6 +264,133 @@ class GenomeRequestHandler(http.server.BaseHTTPRequestHandler):
 
                 final_html = html_template.replace("{gene}", gene)
                 final_html = final_html.replace("{identifier}", identifier)
+
+
+                # Escribimos el cuerpo (el HTML) en el socket del navegador
+                self.wfile.write(bytes(final_html, "utf-8"))
+
+            # 4. Si Ensembl no encuentra el gen (por ejemplo, error 400 o 404)
+            else:
+                self.error()
+
+            conn.close()
+        else:
+            self.error()
+
+
+    def show_sequence(self, params):
+        """Servicio 2: Obtiene la secuencia de ADN de un gen (geneSeq) en 2 pasos reales"""
+        # 1. Extraemos el gen que el usuario metió en el cuadro de texto
+        genes = params.get("genes", [None])
+        gene = genes[0] if genes else None
+
+        # Evaluamos el string (singular) y comprobamos que no esté vacío
+        if gene and gene.strip() != "" and gene != "None":
+
+            # --- PASO 1: CONSEGUIR EL ID ESTABLE (ENSG...) ---
+            conn1 = http.client.HTTPConnection("rest.ensembl.org")
+            lookup_endpoint = f"/lookup/symbol/homo_sapiens/{gene}?content-type=application/json"
+
+            conn1.request("GET", lookup_endpoint)
+            res1 = conn1.getresponse()
+
+            if res1.status == 200:
+                data1 = json.loads(res1.read().decode("utf-8"))
+                gene_id = data1.get("id")  # Guardamos el ID único (ej: ENSG00000165879)
+                conn1.close()  # Cerramos la primera conexión limpiamente
+
+                if gene_id:
+                    # --- PASO 2: CONSEGUIR LA SECUENCIA CON ESE ID ---
+                    conn2 = http.client.HTTPConnection("rest.ensembl.org")
+                    seq_endpoint = f"/sequence/id/{gene_id}?content-type=application/json"
+
+                    conn2.request("GET", seq_endpoint)
+                    res2 = conn2.getresponse()
+
+                    if res2.status == 200:
+                        data2 = json.loads(res2.read().decode("utf-8"))
+                        dna_sequence = data2.get("seq", "No sequence found")
+                        conn2.close()  # Cerramos la segunda conexión
+
+                        # --- PASO 3: CARGAR TU PLANTILLA HTML Y PINTAR ---
+                        base_dir = os.path.dirname(os.path.abspath(__file__))
+                        file_path = os.path.join(base_dir, "html", "sequence.html")
+
+                        try:
+                            with open(file_path, "r", encoding="utf-8") as f:
+                                html_template = f.read()
+                            # Reemplazamos los marcadores de tu archivo HTML
+                            response_html = html_template.replace("{genes}", gene).replace("{sequence}", dna_sequence)
+                        except FileNotFoundError:
+                            # Plan B de emergencia por si el archivo no existiera
+                            response_html = f"<html><body><h1>Sequence of {gene}</h1><p>{dna_sequence}</p></body></html>"
+
+                        # Enviamos la respuesta HTTP correcta (200 OK) al navegador
+                        self.send_response(200)
+                        self.send_header("Content-Type", "text/html; charset=utf-8")
+                        self.end_headers()
+                        self.wfile.write(bytes(response_html, "utf-8"))
+                        return  # Salimos con éxito absoluto
+
+                    else:
+                        # Si falla la petición de la secuencia
+                        res2.read()
+                        conn2.close()
+                        self.error()
+                        return
+            else:
+                # Si falla el lookup (el gen no existe en la base de datos)
+                res1.read()
+                conn1.close()
+                self.error()
+                return
+
+        # Si el usuario mandó el formulario vacío o fallaron los 'if'
+        self.error()
+
+
+
+    def show_info(self, params):
+
+        gene_list = params.get("gene", [None])
+        gene = gene_list[0] if gene_list else None
+
+        if gene:
+            # 2. Conectamos con el servidor REST de Ensembl
+            server = "rest.ensembl.org"
+            conn = http.client.HTTPConnection(server)
+
+            # Construimos la URL dinámica usando f-string con el gen introducido
+            endpoint = f"/lookup/symbol/homo_sapiens/{gene}?content-type=application/json"
+            conn.request("GET", endpoint)
+            response = conn.getresponse()
+
+            # 3. Si Ensembl encuentra el gen (Status 200 OK)
+            if response.status == 200:
+                data = json.loads(response.read().decode("utf-8"))
+                start = data.get("start")
+                end = data.get("end")
+                length = end - start + 1
+                Id = data.get("id", "ID no encontrado")
+                name_chromo = data.get("seq_region_name")
+
+                base_dir = os.path.dirname(os.path.abspath(__file__))
+                file_path = os.path.join(base_dir, "html", "info.html")
+
+                with open(file_path, "r", encoding="utf-8") as f:
+                    html_template = f.read()
+
+                # Enviamos las cabeceras HTTP reglamentarias al cliente
+                self.send_response(200)
+                self.send_header("Content-Type", "text/html; charset=utf-8")
+                self.end_headers()
+
+                final_html = html_template.replace("{start}", str(start))
+                final_html = final_html.replace("{end}", str(end))
+                final_html = final_html.replace("{length}", str(length))
+                final_html = final_html.replace("{id}", str(Id))
+                final_html = final_html.replace("{name}", str(name_chromo))
+                final_html = final_html.replace("{gene}", gene)
 
 
                 # Escribimos el cuerpo (el HTML) en el socket del navegador
