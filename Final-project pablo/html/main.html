@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Main Menu</title>
+</head>
+<body style ="background-color: lightblue;">
+<h1>Browsing Human and Vertebrate genome</h1>
+<h2>Basic level services: </h2>
+
+    <form action="/listSpecies" method="get">
+        <h3>1) List of species in the genome database</h3>
+        Limit: <input type="text" name="limit">
+        <br><br>
+        <input type="submit" name="list" value="Send">
+        <br><br>
+    </form>
+    <form action="/karyotype" method="get">
+        <h3>2) Information about the karyotype</h3>
+        Select the species: <input type="text" name="species">
+        <br><br>
+        <input type="submit" name="get_karyotype" value="Send">
+        <br><br>
+    </form>
+    <form action="/chromosomeLength" method="get">
+        <h3>3) Chromosome length</h3>
+        Select the species: <input type="text" name="species">
+        <br>
+        Select a chromosome: <input type="text" name="chromo">
+        <br><br>
+        <input type="submit" name="chromosome_length" value="Send">
+        <br><br>
+    </form>
+    <h1>Human genes section</h1>
+    <form action="/geneLookup" method="get">
+        <h3>4) Look for a gene identifier</h3>
+        Introduce gene: <input type="text" name="gene">
+        <br><br>
+        <input type="submit" name="lookup" value="Send">
+        <br><br>
+    </form>
+    <form action="/geneSeq" method="get">
+        <h3>5) Look for the sequence of a gene</h3>
+        Introduce gene: <input type="seq" name="gene">
+        <br><br>
+        <input type="submit" name="list" value="Send">
+        <br><br>
+    </form>
+    <form action="/geneInfo" method="get">
+        <h3>6) Get information of a gene</h3>
+        Introduce gene: <input type="text" name="gene">
+        <br><br>
+        <input type="submit" name="info" value="Send">
+        <br><br>
+    </form>
+    <form action="/geneCalc" method="get">
+        <h3>7) Calculate the bases and percentages of a gene:</h3>
+        Introduce gene: <input type="text" name="gene">
+        <br><br>
+        <input type="submit" name="calc" value="Send">
+        <br><br>
+    </form>
+    <form action="/geneList" method="get">
+        <h3>8) Get the genes in a chromosome region</h3>
+        Chromosome: <input type="text" name="chromo">
+        Starting position: <input type="text" name="start">
+        Ending position: <input type="text" name="end">
+        <br><br>
+        <input type="submit" name="list" value="Send">
+        <br><br>
+    </form>
+</body>
+</html>

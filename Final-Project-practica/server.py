@@ -29,6 +29,8 @@ class GenomeRequestHandler(http.server.BaseHTTPRequestHandler):
             self.show_info(params)
         elif path == "/geneCalc":
             self.show_operations(params)
+        elif path == "/compare_genes":
+            self.show_comp_genes(params)
         else:
             self.error()
 
@@ -59,6 +61,21 @@ class GenomeRequestHandler(http.server.BaseHTTPRequestHandler):
         self.end_headers()
 
         self.wfile.write(bytes(error_html, "utf-8"))
+
+
+    def exam_error(self):
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+        file_path = os.path.join(base_dir, "html", "exam_error.html")
+
+        with open(file_path, "r", encoding="utf-8") as f:
+            error_html = f.read()
+
+        self.send_response(404)
+        self.send_header("Content-type", "text/html")
+        self.end_headers()
+
+        self.wfile.write(bytes(error_html, "utf-8"))
+
 
 
     def show_list_species(self, params):
@@ -416,6 +433,79 @@ class GenomeRequestHandler(http.server.BaseHTTPRequestHandler):
 
         else:
             self.error()
+
+
+    def comp_genes(self, params):
+        gene_1 = params.get("gene1", [None])
+        gene_1 = gene_1[0] if gene_1 else None
+        gene_2 = params.get("gene2", [None])
+        gene_2 = gene_2[0] if gene_2 else None
+
+        if not gene_1 or not gene_2:
+            return self.exam_error
+
+        url1 = f"rest.ensembl.org/lookup/id/{gene_1}?expand=1"
+        url2 = f"rest.ensembl.org/lookup/id/{gene_2}?expand=1"
+
+        res1 = requests.get(url1, headers={"Content-Type" :"aplication/json "})
+        res2 = requests.get(url2, headers={"Content-Type" :"aplication/json "})
+
+        if res1.status_code != 200 or res2.status_code != 200:
+            return self.exam_error()
+
+
+        data1 = res1.json()
+        data2 = res2.json()
+
+        name1 = data1.get("display_name")
+        name2 = data2.get("display_name")
+
+        id1 = data1.get("id")
+        id2 = data2.get("id")
+
+        transcripts1 = data1.get("Transcript", [])
+        total_transcripts1 = len(transcripts1)
+        max_exons1 = 0
+        for x in transcripts1:
+            exons = x.get("Exons", [])
+            n_exons = len(exons)
+            if n_exons > max_exons1:
+                max_exons1 = n_exons
+
+        transcripts2 = data2.get("Transcript", [])
+        total_transcripts2 = len(transcripts2)
+        max_exons2 = 0
+        for x in transcripts2:
+            exons = x.get("Exons", [])
+            n_exons = len(exons)
+            if n_exons > max_exons2:
+                max_exons2 = n_exons
+
+
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+        file_path = os.path.join(base_dir, "html", "exam.html")
+
+        with open(file_path, "r", encoding="utf-8") as f:
+            html_template = f.read()
+
+        self.send_response(200)
+        self.send_header("Content-Type", "text/html; charset=utf-8")
+        self.end_headers()
+
+        final_html = html_template.replace("{gene_1}", name1)
+        final_html = final_html.replace("{gene_2}", name2)
+        final_html = final_html.replace("{id1}", id1)
+        final_html = final_html.replace("{id2}", id2)
+        final_html = final_html.replace("{transcripts1}", str(total_transcripts1))
+        final_html = final_html.replace("{transcripts2}", str(total_transcripts2))
+        final_html = final_html.replace("{max_exons1}", str(max_exons1))
+        final_html = final_html.replace("{max_exons2}", str(max_exons2))
+
+        self.wfile.write(bytes(final_html, "utf-8"))
+        return
+
+
+
 
 
 

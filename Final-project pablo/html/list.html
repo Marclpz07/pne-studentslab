@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Seq2 Server</title>
+  </head>
+  <body style ="background-color: lightblue;">
+    <h1>List of genomes in ensembl</h1>
+    <h2>Limit: {{ context.limit }}</h2>
+       {{ context.list | replace('\n', '<br>') | safe }}
+      <br><br>
+  </body>
+</html>
